@@ -1,24 +1,26 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { useEffect, useState } from 'react';
+
+import { ISupermarket } from './@types'
+
+import api from './services/api';
+import Supermarket from './components/Supermarket';
 
 function App() {
+  const [supermarkets, setSupermarkets] = useState<ISupermarket[]>([]);
+
+  useEffect(() => {
+    api.get<{data: ISupermarket[]}>('/supermarkets')
+      .then(({ data: { data } })=>  setSupermarkets(data))
+  }, []);
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      {supermarkets?.map(supermarket => (
+        <Supermarket 
+          key={supermarket._id.$oid}
+          supermarket={supermarket}
+        />
+      ))}
     </div>
   );
 }
